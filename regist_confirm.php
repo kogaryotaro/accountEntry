@@ -63,11 +63,21 @@ $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
     </p>
 
     <p>パスワード
-      <?php echo $_SESSION['password']; ?>
+      <?php
+        for($i = 0; $i < mb_strlen($password, 'UTF-8'); $i++){
+          echo "●";
+        }
+      ?>
     </p>
 
     <p>性別
-      <?php echo $_SESSION['gender']; ?>
+      <?php 
+        if($_SESSION['gender']=== 0){
+          echo "男";    
+        }else{
+          echo "女";
+        }  
+      ?>
     </p>
 
     <p>郵便番号
@@ -87,7 +97,13 @@ $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
     </p>
 
     <p>アカウント権限
-      <?php echo $_SESSION['authority']; ?>
+      <?php 
+        if($_SESSION['authority']=== 0){
+          echo "一般";    
+        }else{
+          echo "管理者";
+        }  
+      ?>
     </p>
 
     <form action="regist.php">

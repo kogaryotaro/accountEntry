@@ -51,6 +51,9 @@ form div{
     padding: 15px;
 }
 
+form p{
+    color: red;
+}
 .text, textarea, .dropdown{
     border: 1px solid #dfdfdf;
     padding: 5ps;

@@ -15,9 +15,11 @@
   $address_2 = isset($_SESSION['address_2']) ? $_SESSION['address_2'] : '';
   $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
 
-  echo $family_name_kana;
-
+  date_default_timezone_set('Asia/Tokyo'); 
   $time = date("Y-m-d H:i:s");
+
+  $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
 
   mb_internal_encoding("utf8");
 
@@ -25,15 +27,9 @@
 
   $result=  
       $pdo ->exec("insert into regist(family_name, last_name, family_name_kana, last_name_kana, mail, password, gender,  postal_code, prefecture, address_1, address_2, authority, delete_flag, registered_time, update_time)
-      values('$family_name', '$last_name', '$family_name_kana', '$last_name_kana', '$mail', '$password', '$gender', '$postal_code', '$prefecture', '$address_1', '$address_2', '$authority', '0', '$time', '$time')");
-  
-  if ($result !== false) {
-    session_unset();
-    session_destroy();
-  } else {
-      echo "<div class='error-message'>エラーが発生したためアカウント登録できません</div>";
-  }
-  
+      values('$family_name', '$last_name', '$family_name_kana', '$last_name_kana', '$mail', '$hashed_password', '$gender', '$postal_code', '$prefecture', '$address_1', '$address_2', '$authority', '0', '$time', '$time')");
+
+  $result = false;
 ?>
 
 <!doctype HTML>
@@ -62,11 +58,23 @@
     
   <h1>アカウント登録完了画面</h1>
   
-  <div class="complete">
-    <p>登録完了しました</p> 
-    <form action="index.html" method="post">
-      <input type="submit" class="button2" value="TOPページに戻る">
-  </div>
+  <?php
+  if ($result !== false) {
+    session_unset();
+    session_destroy();
+  ?>
+    
+    <div class="complete">
+      <p>登録完了しました</p> 
+      <form action="index.html" method="post">
+        <input type="submit" class="button2" value="TOPページに戻る">
+    </div>
+      
+  <?php
+   } else { 
+       echo "<div class='error-message'>エラーが発生したためアカウント登録できません</div>";
+   }
+  ?>
     
     
   <footer>
@@ -75,3 +83,4 @@
     
 </body>
 </html>
+  
