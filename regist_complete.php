@@ -29,7 +29,6 @@
       $pdo ->exec("insert into regist(family_name, last_name, family_name_kana, last_name_kana, mail, password, gender,  postal_code, prefecture, address_1, address_2, authority, delete_flag, registered_time, update_time)
       values('$family_name', '$last_name', '$family_name_kana', '$last_name_kana', '$mail', '$hashed_password', '$gender', '$postal_code', '$prefecture', '$address_1', '$address_2', '$authority', '0', '$time', '$time')");
 
-  $result = false;
 ?>
 
 <!doctype HTML>
