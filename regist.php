@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <form method="post" action="regist.php">
       
     <div>
-      <label>名前(性)　　</label>
+      <label>名前(姓)　　</label>
       <input type="text" class="text" size="35" name="family_name" value="<?php echo (!empty($_SESSION['family_name'])) ? $_SESSION['family_name'] : ''; ?>">
         
       <?php if (!empty($errors['family_name'])): ?>
@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
       
     <div>
-      <label>カナ(性)　　</label>
+      <label>カナ(姓)　　</label>
       <input type="text" class="text" size="35" name="family_name_kana" value="<?php echo (!empty($_SESSION['family_name_kana'])) ? $_SESSION['family_name_kana'] : ''; ?>">
         
       <?php if (!empty($errors['family_name_kana'])): ?>
