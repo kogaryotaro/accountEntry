@@ -48,7 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['mail'] = 'メールアドレスが未入力です。';
     } elseif (!preg_match('/^[a-zA-Z0-9\-@.]{1,100}$/', $mail)) {
         $errors['mail'] = 'メールアドレスは半角英数字、半角ハイフン、半角記号（ハイフンとアットマーク）のみ入力可能で、最大100文字です。';
+    }elseif (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+        $errors['mail'] = 'メールアドレスの形式が無効です。';
     }
+    
 
     if (empty($password)) {
         $errors['password'] = 'パスワードが未入力です。';
@@ -72,6 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['address_2'] = '住所（番地）が未入力です。';
     } elseif (mb_strlen($address_2, 'UTF-8') > 100 || !preg_match('/^[ぁ-んァ-ン一-龠0-9 -]+$/u', $address_2)) {
         $errors['address_2'] = '住所（番地）はひらがな、漢字、数字、カタカナ、記号（ハイフンとスペース）のみ入力可能で、最大100文字です。';
+    }  elseif (preg_match('/^0/', $address_2)) {
+        $errors['address_2'] = '住所（番地）は0から始まる値は使用できません。';
     }
 
     
@@ -139,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div>
       <label>名前(姓)　　</label>
       <input type="text" class="text" size="35" name="family_name" value="<?php echo (!empty($_SESSION['family_name'])) ? $_SESSION['family_name'] : ''; ?>">
-        
+       
       <?php if (!empty($errors['family_name'])): ?>
         <p><?php echo $errors['family_name']; ?></p>
       <?php endif; ?>
