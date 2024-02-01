@@ -56,7 +56,7 @@ form p{
 }
 .text, textarea, .dropdown{
     border: 1px solid #dfdfdf;
-    padding: 5ps;
+    padding: 5px;
     color: #999;
     background-color: #fff;
 }
@@ -68,6 +68,11 @@ form p{
     background-color: #bfbfbf;
     border-radius: 5px;
     border-bottom: 2px solid gray;
+}
+
+main table{
+   margin: auto;
+   text-align: center;
 }
 
 /* フッター  */

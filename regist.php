@@ -134,6 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <li>問い合わせ</li>
         <li>その他</li>
         <li><a href="regist.php">アカウント登録</a></li>
+        <li><a href="list.php">アカウント一覧</a></li>
       </ul>
   </header>
     
