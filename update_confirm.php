@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+$id = isset($_SESSION['id']) ? $_SESSION['id'] : '';
 $last_name = isset($_SESSION['last_name']) ? $_SESSION['last_name'] : '';
 $first_name = isset($_SESSION['family_name']) ? $_SESSION['family_name'] : '';
 $last_name_kana = isset($_SESSION['last_name_kana']) ? $_SESSION['last_name_kana'] : '';
@@ -20,7 +21,7 @@ $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
 
 <head>
   <meta charset="utf-8">
-  <title>お問い合わせフォームを作る</title>
+  <title>アカウント更新確認画面</title>
   <link rel="stylesheet" type="text/css" href="style2.css">
 </head>
 
@@ -36,11 +37,11 @@ $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
       <li>問い合わせ</li>
       <li>その他</li>
       <li><a href="regist.php?clear_session=true">アカウント登録</a></li>
-      <li><a href="list.php?clear_session=true">アカウント一覧</a></li>
+        <li><a href="list.php?clear_session=true">アカウント一覧</a></li>
     </ul>
   </header>
 
-  <h1>アカウント登録確認画面</h1>
+  <h1>アカウント更新確認画面</h1>
 
   <div class="confirm">
     <p>名前(性)
@@ -107,8 +108,9 @@ $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
       ?>
     </p>
 
-    <form action="regist.php" >
+    <form action="update.php">
       <input type="submit" class="button1" value="前に戻る">
+      <input type="hidden" value="<?php echo $_SESSION['id']; ?>" name="id">
       <input type="hidden" value="<?php echo $_SESSION['last_name']; ?>" name="last_name">
       <input type="hidden" value="<?php echo $_SESSION['family_name']; ?>" name="family_name">
       <input type="hidden" value="<?php echo $_SESSION['last_name_kana']; ?>" name="last_name_kana">
@@ -123,8 +125,9 @@ $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
       <input type="hidden" value="<?php echo $_SESSION['authority']; ?>" name="authority">
     </form>
 
-    <form action="regist_complete.php" method="post">
+    <form action="update_complete.php" method="post">
       <input type="submit" class="button2" value="登録する">
+      <input type="hidden" value="<?php echo $_SESSION['id']; ?>" name="id">
       <input type="hidden" value="<?php echo $_SESSION['last_name']; ?>" name="last_name">
       <input type="hidden" value="<?php echo $_SESSION['family_name']; ?>" name="family_name">
       <input type="hidden" value="<?php echo $_SESSION['last_name_kana']; ?>" name="last_name_kana">

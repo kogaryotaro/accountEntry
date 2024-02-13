@@ -1,5 +1,54 @@
 <?php
+
+  mb_internal_encoding("utf8");
+
+  try {
+    // ここで接続エラーが発生する可能性がある。
+    $pdo = new PDO("mysql:dbname=regist;host=localhost;", "root", "");
+   } catch (PDOException $e) {
+    // 接続エラーが発生した場合の処理
+     echo  
+      "<!doctype HTML>
+        <html lang=\"ja\">
+        <head>
+        <meta charset=\"utf-8\">
+        <title>アカウント登録完了画面</title>
+        <link rel=\"stylesheet\" type=\"text/css\" href=\"style2.css\">
+        </head>
+        <body>
+
+        <header>
+            <img src=\"diblog_logo.jpg\">
+            <ul class=\"menu\">
+                <li>トップ</li>
+                <li>プロフィール</li>
+                <li>D.I.Blogについて</li>
+                <li>登録フォーム</li>
+                <li>問い合わせ</li>
+                <li>その他</li>
+                <li><a href=\"regist.php\">アカウント登録</a></li>
+                <li><a href=\"list.php\">アカウント一覧</a></li>
+            </ul>
+        </header>
+
+        <h1>アカウント登録完了画面</h1>
+        
+        
+        <div class='error-message'>エラーが発生したためアカウント登録できません</div>
+ 
+
+        <footer>
+            <p>Copyright D.I.works| D.I.blog is the one which provides A to Z about programming</p>
+        </footer>
+
+    </body>
+    </html>";
+    exit();
+ }
+
+
 session_start();
+
 
 // クエリパラメータが設定されているかどうかを確認し、セッションをクリアする
 if (isset($_GET['clear_session']) && $_GET['clear_session'] === 'true') {
@@ -7,13 +56,14 @@ if (isset($_GET['clear_session']) && $_GET['clear_session'] === 'true') {
     $_SESSION = array();
 }
 
-$errors = array();
 
+$errors = array();
 
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+    $id = $_POST['id'];
     $last_name = $_POST['last_name'];
     $family_name = $_POST['family_name'];
     $last_name_kana = $_POST['last_name_kana'];
@@ -89,6 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     
     if (empty($errors)) {
+        $_SESSION['id'] = $id;
         $_SESSION['last_name'] = $last_name;
         $_SESSION['family_name'] = $family_name;
         $_SESSION['last_name_kana'] = $last_name_kana;
@@ -102,9 +153,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['address_2'] = $address_2;
         $_SESSION['authority'] = $authority;
 
-        header('Location: regist_confirm.php');
+        header('Location: update_confirm.php');
         exit;
     }else {
+        $_SESSION['id'] = $id;
         $_SESSION['last_name'] = $last_name;
         $_SESSION['family_name'] = $family_name;
         $_SESSION['last_name_kana'] = $last_name_kana;
@@ -119,6 +171,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['authority'] = $authority;
     }
 }
+
+if(isset($_GET['id'])){
+    $id = $_GET['id'];
+}
+    $stmt = $pdo->query("SELECT * FROM regist WHERE id = $id");
+    $user = $stmt -> fetch(); 
+
+    // 暗号化に使用するキー
+    $key = 'userAccountEntryKey'; 
+
+    // パスワードを復号化
+    $decrypted_password = openssl_decrypt($user['password'], 'AES-256-CBC', $key, 0, substr($key, 0, 16));
+
+
+
 ?>
 
 
@@ -127,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <head>
     <meta charset="utf-8">
-    <title>アカウント登録画面</title>
+    <title>アカウント更新画面</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
     
@@ -147,12 +214,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </header>
     
   <main>
-  <h1>アカウント登録画面</h1>
-  <form method="post" action="regist.php">
+  <h1>アカウント更新画面</h1>
+  <form method="post" action="update.php">
+      
+    <!-- idをわたす-->
+    <input type="hidden" value="<?php echo $user['id']; ?>" name="id">
       
     <div>
       <label>名前(姓)　　</label>
-      <input type="text" class="text" size="35" name="family_name" value="<?php echo (!empty($_SESSION['family_name'])) ? $_SESSION['family_name'] : ''; ?>">
+      <input type="text" class="text" size="35" name="family_name" value="<?php echo (!empty($_SESSION['family_name'])) ? $_SESSION['family_name'] : $user['family_name']; ?>">
        
       <?php if (!empty($errors['family_name'])): ?>
         <p><?php echo $errors['family_name']; ?></p>
@@ -161,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <div>
       <label>名前(名)　　</label>
-      <input type="text" class="text" size="35" name="last_name" value="<?php echo (!empty($_SESSION['last_name'])) ? $_SESSION['last_name'] : ''; ?>">
+      <input type="text" class="text" size="35" name="last_name" value="<?php echo (!empty($_SESSION['last_name'])) ? $_SESSION['last_name'] : $user['last_name']; ?>">
         
       <?php if (!empty($errors['last_name'])): ?>
         <p><?php echo $errors['last_name']; ?></p>
@@ -170,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
     <div>
       <label>カナ(姓)　　</label>
-      <input type="text" class="text" size="35" name="family_name_kana" value="<?php echo (!empty($_SESSION['family_name_kana'])) ? $_SESSION['family_name_kana'] : ''; ?>">
+      <input type="text" class="text" size="35" name="family_name_kana" value="<?php echo (!empty($_SESSION['family_name_kana'])) ? $_SESSION['family_name_kana'] : $user['family_name_kana']; ?>">
         
       <?php if (!empty($errors['family_name_kana'])): ?>
         <p><?php echo $errors['family_name_kana']; ?></p>
@@ -179,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
     <div>
       <label>カナ(名)　　</label>
-      <input type="text" class="text" size="35" name="last_name_kana" value="<?php echo (!empty($_SESSION['last_name_kana'])) ? $_SESSION['last_name_kana'] : ''; ?>">
+      <input type="text" class="text" size="35" name="last_name_kana" value="<?php echo (!empty($_SESSION['last_name_kana'])) ? $_SESSION['last_name_kana'] : $user['last_name_kana']; ?>">
         
       <?php if (!empty($errors['last_name_kana'])): ?>
         <p><?php echo $errors['last_name_kana']; ?></p>
@@ -188,7 +258,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <div>
       <label>メールアドレス　　</label>
-      <input type="text" class="text" size="35" name="mail" value="<?php echo (!empty($_SESSION['mail'])) ? $_SESSION['mail'] : ''; ?>">
+      <input type="text" class="text" size="35" name="mail" value="<?php echo (!empty($_SESSION['mail'])) ? $_SESSION['mail'] : $user['mail']; ?>">
         
       <?php if (!empty($errors['mail'])): ?>
         <p><?php echo $errors['mail']; ?></p>
@@ -197,24 +267,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
     <div>
       <label>パスワード　　</label>
-      <input type="text" class="text" size="35" name="password" value="<?php echo (!empty($_SESSION['password'])) ? $_SESSION['password'] : ''; ?>">
+        
+   <!--   これはphp上できないらしい
+    <input type="text" class="text" size="35" name="password" value="<?php //echo (!empty($_SESSION['password'])) ?
+        //for($i = 0; $i < mb_strlen($_SESSION['password'] , 'UTF-8'); $i++){
+          //echo "●";
+       // }: for($i = 0; $i < mb_strlen($user['password'] , 'UTF-8'); $i++){
+          //   echo "●";
+       // }
+      ?>">
+    -->    
+        <input type="text" class="text" size="35" name="password" value="<?php echo (!empty($_SESSION['password'])) ? str_repeat('●', mb_strlen($_SESSION['password'], 'UTF-8')) : str_repeat('●', mb_strlen($decrypted_password, 'UTF-8')); ?>">
+
         
       <?php if (!empty($errors['password'])): ?>
         <p><?php echo $errors['password']; ?></p>
       <?php endif; ?>
     </div>  
     
-   <div>
+      
+    <div>
       <label>性別　　</label>
-      <label for="male">男</label>
-      <input type="radio" class="text" checked="checked" name="gender" value="0" <?php echo (!empty($_SESSION['gender']) && $_SESSION['gender'] === '0') ? 'checked' : ''; ?>>
-      <label for="female">女</label>
-      <input type="radio" class="text" name="gender" value="1" <?php echo (!empty($_SESSION['gender']) && $_SESSION['gender'] === '1') ? 'checked' : ''; ?>>
-   </div>
+        <label for="male">男</label>
+          <input type="radio" class="text" name="gender" value="0" <?php echo ((isset($_SESSION['gender']) && $_SESSION['gender'] === "0") || (!isset($_SESSION['gender']) && $user['gender'] === 0)) ? 'checked' : ''; ?>>
+        <label for="female">女</label>
+          <input type="radio" class="text" name="gender" value="1" <?php echo ((isset($_SESSION['gender']) && $_SESSION['gender'] === "1") || (!isset($_SESSION['gender']) && $user['gender'] === 1)) ? 'checked' : ''; ?>>
+    </div>
+
       
     <div>
       <label>郵便番号　　</label>
-      <input type="text" class="text" size="10" name="postal_code" value="<?php echo (!empty($_SESSION['postal_code'])) ? $_SESSION['postal_code'] : ''; ?>">
+      <input type="text" class="text" size="10" name="postal_code" value="<?php echo (!empty($_SESSION['postal_code'])) ? $_SESSION['postal_code'] : $user['postal_code']; ?>">
         
       <?php if (!empty($errors['postal_code'])): ?>
         <p><?php echo $errors['postal_code']; ?></p>
@@ -241,7 +324,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       foreach ($prefectures as $prefecture) {
         echo '<option value="' . $prefecture . '"';
-        echo (!empty($_SESSION['prefecture']) && $_SESSION['prefecture'] === $prefecture) ? ' selected' : '';
+        echo (!empty($_SESSION['prefecture']) && $_SESSION['prefecture'] === $prefecture) ? 'selected' : ($user['prefecture'] === $prefecture ? 'selected' : '');
         echo '>' . $prefecture . '</option>';
       }
     ?>
@@ -252,7 +335,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
     <div>
       <label>住所(市区町村)　　</label>
-      <input type="text" class="text" size="35" name="address_1" value="<?php echo (!empty($_SESSION['address_1'])) ? $_SESSION['address_1'] : ''; ?>">
+      <input type="text" class="text" size="35" name="address_1" value="<?php echo (!empty($_SESSION['address_1'])) ? $_SESSION['address_1'] : $user['address_1']; ?>">
         
       <?php if (!empty($errors['address_1'])): ?>
         <p><?php echo $errors['address_1']; ?></p>
@@ -261,20 +344,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
     <div>
       <label>住所(番地)　　</label>
-      <input type="text" class="text" size="35" name="address_2" value="<?php echo (!empty($_SESSION['address_2'])) ? $_SESSION['address_2'] : ''; ?>">
+      <input type="text" class="text" size="35" name="address_2" value="<?php echo (!empty($_SESSION['address_2'])) ? $_SESSION['address_2'] : $user['address_2']; ?>">
         
       <?php if (!empty($errors['address_2'])): ?>
         <p><?php echo $errors['address_2']; ?></p>
       <?php endif; ?>
     </div>
       
+      
+      
     <div>
       <label>アカウント権限　　</label>
       <select class="text" name="authority">
-        <option selected value="0" <?php echo (!empty($_SESSION['authority']) && $_SESSION['authority'] === '0') ? 'selected' : ''; ?>>一般</option>
-        <option value="1" <?php echo (!empty($_SESSION['authority']) && $_SESSION['authority'] === '1') ? 'selected' : ''; ?>>管理者</option>
+        <option value="0" <?php echo (isset($_SESSION['authority']) && $_SESSION['authority'] === "0"|| (!isset($_SESSION['authority']) && $user['authority'] === 0)) ? 'selected' : ''; ?>>一般</option>
+        <option value="1" <?php echo (isset($_SESSION['authority']) && $_SESSION['authority'] === "1"|| (!isset($_SESSION['authority']) && $user['authority'] === 1)) ? 'selected' : ''; ?>>管理者</option>
       </select>
-    </div>  
+    </div>
       
     <div>
       <input type="submit" class="submit" value="確認する">

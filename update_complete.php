@@ -2,6 +2,8 @@
   
   session_start();
 
+  
+  $id = isset($_POST['id']) ? $_POST['id'] : '';
   $last_name = isset($_SESSION['last_name']) ? $_SESSION['last_name'] : '';
   $family_name = isset($_SESSION['family_name']) ? $_SESSION['family_name'] : '';
   $last_name_kana = isset($_SESSION['last_name_kana']) ? $_SESSION['last_name_kana'] : '';
@@ -71,9 +73,25 @@
     exit();
  }
 
-  $result=  
-      $pdo ->exec("insert into regist(family_name, last_name, family_name_kana, last_name_kana, mail, password, gender,  postal_code, prefecture, address_1, address_2, authority, delete_flag, registered_time, update_time)
-      values('$family_name', '$last_name', '$family_name_kana', '$last_name_kana', '$mail', '$encrypted_password', '$gender', '$postal_code', '$prefecture', '$address_1', '$address_2', '$authority', '0', '$time', '$time')");
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+  $result = $pdo->exec("UPDATE regist SET 
+    family_name = '$family_name',
+    last_name = '$last_name',
+    family_name_kana = '$family_name_kana',
+    last_name_kana = '$last_name_kana',
+    mail = '$mail',
+    password = '$encrypted_password',
+    gender = '$gender',
+    prefecture = '$prefecture', 
+    address_1 = '$address_1',
+    address_2 = '$address_2', 
+    authority = '$authority', 
+    update_time = '$time'
+  WHERE id = $id");
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
 
 ?>
 
@@ -81,7 +99,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>アカウント登録完了画面</title>
+  <title>アカウント更新完了画面</title>
   <link rel="stylesheet" type="text/css" href="style2.css">
 </head>
 
@@ -102,12 +120,13 @@
   </header>
     
     
-  <h1>アカウント登録完了画面</h1>
+  <h1>アカウント更新完了画面</h1>
   
   <?php
   if ($result !== false || $pdo !== false ) {
     session_unset();
     session_destroy();
+  }
   ?>
     
     <div class="complete">
@@ -116,12 +135,6 @@
         <input type="submit" class="button2" value="TOPページに戻る">
     </div>
       
-  <?php
-   } else { 
-       echo "<div class='error-message'>エラーが発生したためアカウント登録できません</div>";
-   }
-  ?>
-    
     
   <footer>
     <p>Copyright D.I.works| D.I.blog is the one which provides A to Z about programming</p>
