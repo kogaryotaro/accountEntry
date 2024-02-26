@@ -73,7 +73,7 @@ $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
 
     <p>性別
       <?php 
-        if($_SESSION['gender']=== 0){
+        if($_SESSION['gender']== 0){
           echo "男";    
         }else{
           echo "女";
@@ -99,7 +99,7 @@ $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
 
     <p>アカウント権限
       <?php 
-        if($_SESSION['authority']=== 0){
+        if($_SESSION['authority']== 0){
           echo "一般";    
         }else{
           echo "管理者";

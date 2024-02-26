@@ -63,6 +63,8 @@ $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
     <p>メールアドレス
       <?php echo $_SESSION['mail']; ?>
     </p>
+      
+    <?php echo $password; ?>
 
     <p>パスワード
       <?php
@@ -74,7 +76,7 @@ $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
 
     <p>性別
       <?php 
-        if($_SESSION['gender']=== 0){
+        if($_SESSION['gender']== 0){
           echo "男";    
         }else{
           echo "女";
@@ -97,10 +99,10 @@ $authority = isset($_SESSION['authority']) ? $_SESSION['authority'] : '';
     <p>住所(番地)
       <?php echo $_SESSION['address_2']; ?>
     </p>
-
+      
     <p>アカウント権限
       <?php 
-        if($_SESSION['authority']=== 0){
+        if($_SESSION['authority']== 0){
           echo "一般";    
         }else{
           echo "管理者";

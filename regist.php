@@ -1,123 +1,167 @@
 <?php
+
+mb_internal_encoding("utf8");
 session_start();
 
-// クエリパラメータが設定されているかどうかを確認し、セッションをクリアする
-if (isset($_GET['clear_session']) && $_GET['clear_session'] === 'true') {
-    // セッションをクリアする
-    $_SESSION = array();
-}
-
-$errors = array();
-
-
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $last_name = $_POST['last_name'];
-    $family_name = $_POST['family_name'];
-    $last_name_kana = $_POST['last_name_kana'];
-    $family_name_kana = $_POST['family_name_kana'];
-    $mail = $_POST['mail'];
-    $password = $_POST['password'];
-    $gender = $_POST['gender'];
-    $postal_code = $_POST['postal_code'];
-    $prefecture = $_POST['prefecture'];
-    $address_1 = $_POST['address_1'];
-    $address_2 = $_POST['address_2'];
-    $authority = $_POST['authority'];
-
-    // 入力チェック
-    if (empty($last_name)) {
-        $errors['last_name'] = '名前（姓）が未入力です。';
-    } elseif (mb_strlen($last_name, 'UTF-8') > 10 || !preg_match('/^[ぁ-んァ-ン一-龠]+$/u', $last_name)) {
-        $errors['last_name'] = '名前（姓）はひらがな、漢字のみ入力可能で、最大10文字です。';
-    }
-
-    if (empty($family_name)) {
-        $errors['family_name'] = '名前（名）が未入力です。';
-    } elseif (mb_strlen($family_name, 'UTF-8') > 10 || !preg_match('/^[ぁ-んァ-ン一-龠]+$/u', $family_name)) {
-        $errors['family_name'] = '名前（名）はひらがな、漢字のみ入力可能で、最大10文字です。';
-    }
-
-    if (empty($last_name_kana)) {
-        $errors['last_name_kana'] = 'カナ（姓）が未入力です。';
-    } elseif (mb_strlen($last_name_kana, 'UTF-8') > 10 || !preg_match('/^[ァ-ヶー]+$/u', $last_name_kana)) {
-        $errors['last_name_kana'] = 'カナ（姓）はカタカナのみ入力可能で、最大10文字です。';
-    }
-
-    if (empty($family_name_kana)) {
-        $errors['family_name_kana'] = 'カナ（名）が未入力です。';
-    } elseif (mb_strlen($family_name_kana, 'UTF-8') > 10 || !preg_match('/^[ァ-ヶー]+$/u', $family_name_kana)) {
-        $errors['family_name_kana'] = 'カナ（名）はカタカナのみ入力可能で、最大10文字です。';
-    }
-
-    if (empty($mail)) {
-        $errors['mail'] = 'メールアドレスが未入力です。';
-    } elseif (!preg_match('/^[a-zA-Z0-9\-@.]{1,100}$/', $mail)) {
-        $errors['mail'] = 'メールアドレスは半角英数字、半角ハイフン、半角記号（ハイフンとアットマーク）のみ入力可能で、最大100文字です。';
-    }elseif (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-        $errors['mail'] = 'メールアドレスの形式が無効です。';
-    }
+$login = isset($_SESSION['login']) ? $_SESSION['login'] : '';
+if($login === 1){
     
-
-    if (empty($password)) {
-        $errors['password'] = 'パスワードが未入力です。';
-    } elseif (!preg_match('/^[a-zA-Z0-9]{1,10}$/', $password)) {
-        $errors['password'] = 'パスワードは半角英数字のみ入力可能で、最大10文字です。';
-    }
-    
-    if (empty($postal_code)) {
-        $errors['postal_code'] = '郵便番号が未入力です。';
-    } elseif (!preg_match('/^\d{7}$/', $postal_code)) {
-        $errors['postal_code'] = '郵便番号は半角数字7桁のみ入力可能です。';
+    // クエリパラメータが設定されているかどうかを確認し、セッションをクリアする
+    if (isset($_GET['clear_session']) && $_GET['clear_session'] === 'true') {
+        // セッションをクリアする
+       require_once 'sessionFunction.php';
+       
+       sessionClear();
     }
 
-    if (empty($address_1)) {
-        $errors['address_1'] = '住所（市区町村）が未入力です。';
-    } elseif (mb_strlen($address_1, 'UTF-8') > 10 || !preg_match('/^[ぁ-んァ-ン一-龠0-9 -]+$/u', $address_1)) {
-        $errors['address_1'] = '住所（市区町村）はひらがな、漢字、数字、カタカナ、記号（ハイフンとスペース）のみ入力可能で、最大10文字です。';
-    }
+    $errors = array();
 
-    if (empty($address_2)) {
-        $errors['address_2'] = '住所（番地）が未入力です。';
-    } elseif (mb_strlen($address_2, 'UTF-8') > 100 || !preg_match('/^[ぁ-んァ-ン一-龠0-9 -]+$/u', $address_2)) {
-        $errors['address_2'] = '住所（番地）はひらがな、漢字、数字、カタカナ、記号（ハイフンとスペース）のみ入力可能で、最大100文字です。';
-    }  elseif (preg_match('/^0/', $address_2)) {
-        $errors['address_2'] = '住所（番地）は0から始まる値は使用できません。';
-    }
 
-    
-    if (empty($errors)) {
-        $_SESSION['last_name'] = $last_name;
-        $_SESSION['family_name'] = $family_name;
-        $_SESSION['last_name_kana'] = $last_name_kana;
-        $_SESSION['family_name_kana'] = $family_name_kana;
-        $_SESSION['mail'] = $mail;
-        $_SESSION['password'] = $password;
-        $_SESSION['gender'] = $gender;
-        $_SESSION['postal_code'] = $postal_code;
-        $_SESSION['prefecture'] = $prefecture;
-        $_SESSION['address_1'] = $address_1;
-        $_SESSION['address_2'] = $address_2;
-        $_SESSION['authority'] = $authority;
 
-        header('Location: regist_confirm.php');
-        exit;
-    }else {
-        $_SESSION['last_name'] = $last_name;
-        $_SESSION['family_name'] = $family_name;
-        $_SESSION['last_name_kana'] = $last_name_kana;
-        $_SESSION['family_name_kana'] = $family_name_kana;
-        $_SESSION['mail'] = $mail;
-        $_SESSION['password'] = $password;
-        $_SESSION['gender'] = $gender;
-        $_SESSION['postal_code'] = $postal_code;
-        $_SESSION['prefecture'] = $prefecture;
-        $_SESSION['address_1'] = $address_1;
-        $_SESSION['address_2'] = $address_2;
-        $_SESSION['authority'] = $authority;
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        $last_name = $_POST['last_name'];
+        $family_name = $_POST['family_name'];
+        $last_name_kana = $_POST['last_name_kana'];
+        $family_name_kana = $_POST['family_name_kana'];
+        $mail = $_POST['mail'];
+        $password = $_POST['password'];
+        $gender = $_POST['gender'];
+        $postal_code = $_POST['postal_code'];
+        $prefecture = $_POST['prefecture'];
+        $address_1 = $_POST['address_1'];
+        $address_2 = $_POST['address_2'];
+        $authority = $_POST['authority'];
+
+        // 入力チェック
+        if (empty($last_name)) {
+            $errors['last_name'] = '名前（姓）が未入力です。';
+        } elseif (mb_strlen($last_name, 'UTF-8') > 10 || !preg_match('/^[ぁ-んァ-ン一-龠]+$/u', $last_name)) {
+            $errors['last_name'] = '名前（姓）はひらがな、漢字のみ入力可能で、最大10文字です。';
+        }
+
+        if (empty($family_name)) {
+            $errors['family_name'] = '名前（名）が未入力です。';
+        } elseif (mb_strlen($family_name, 'UTF-8') > 10 || !preg_match('/^[ぁ-んァ-ン一-龠]+$/u', $family_name)) {
+            $errors['family_name'] = '名前（名）はひらがな、漢字のみ入力可能で、最大10文字です。';
+        }
+
+        if (empty($last_name_kana)) {
+            $errors['last_name_kana'] = 'カナ（姓）が未入力です。';
+        } elseif (mb_strlen($last_name_kana, 'UTF-8') > 10 || !preg_match('/^[ァ-ヶー]+$/u', $last_name_kana)) {
+            $errors['last_name_kana'] = 'カナ（姓）はカタカナのみ入力可能で、最大10文字です。';
+        }
+
+        if (empty($family_name_kana)) {
+            $errors['family_name_kana'] = 'カナ（名）が未入力です。';
+        } elseif (mb_strlen($family_name_kana, 'UTF-8') > 10 || !preg_match('/^[ァ-ヶー]+$/u', $family_name_kana)) {
+            $errors['family_name_kana'] = 'カナ（名）はカタカナのみ入力可能で、最大10文字です。';
+        }
+
+        if (empty($mail)) {
+            $errors['mail'] = 'メールアドレスが未入力です。';
+        } elseif (!preg_match('/^[a-zA-Z0-9\-@.]{1,100}$/', $mail)) {
+            $errors['mail'] = 'メールアドレスは半角英数字、半角ハイフン、半角記号（ハイフンとアットマーク）のみ入力可能で、最大100文字です。';
+        }elseif (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+            $errors['mail'] = 'メールアドレスの形式が無効です。';
+        }
+
+
+        if (empty($password)) {
+            $errors['password'] = 'パスワードが未入力です。';
+        } elseif (!preg_match('/^[a-zA-Z0-9]{1,10}$/', $password)) {
+            $errors['password'] = 'パスワードは半角英数字のみ入力可能で、最大10文字です。';
+        }
+
+        if (empty($postal_code)) {
+            $errors['postal_code'] = '郵便番号が未入力です。';
+        } elseif (!preg_match('/^\d{7}$/', $postal_code)) {
+            $errors['postal_code'] = '郵便番号は半角数字7桁のみ入力可能です。';
+        }
+
+        if (empty($address_1)) {
+            $errors['address_1'] = '住所（市区町村）が未入力です。';
+        } elseif (mb_strlen($address_1, 'UTF-8') > 10 || !preg_match('/^[ぁ-んァ-ン一-龠0-9 -]+$/u', $address_1)) {
+            $errors['address_1'] = '住所（市区町村）はひらがな、漢字、数字、カタカナ、記号（ハイフンとスペース）のみ入力可能で、最大10文字です。';
+        }
+
+        if (empty($address_2)) {
+            $errors['address_2'] = '住所（番地）が未入力です。';
+        } elseif (mb_strlen($address_2, 'UTF-8') > 100 || !preg_match('/^[ぁ-んァ-ン一-龠0-9 -]+$/u', $address_2)) {
+            $errors['address_2'] = '住所（番地）はひらがな、漢字、数字、カタカナ、記号（ハイフンとスペース）のみ入力可能で、最大100文字です。';
+        }  elseif (preg_match('/^0/', $address_2)) {
+            $errors['address_2'] = '住所（番地）は0から始まる値は使用できません。';
+        }
+
+
+        if (empty($errors)) {
+            $_SESSION['last_name'] = $last_name;
+            $_SESSION['family_name'] = $family_name;
+            $_SESSION['last_name_kana'] = $last_name_kana;
+            $_SESSION['family_name_kana'] = $family_name_kana;
+            $_SESSION['mail'] = $mail;
+            $_SESSION['password'] = $password;
+            $_SESSION['gender'] = $gender;
+            $_SESSION['postal_code'] = $postal_code;
+            $_SESSION['prefecture'] = $prefecture;
+            $_SESSION['address_1'] = $address_1;
+            $_SESSION['address_2'] = $address_2;
+            $_SESSION['authority'] = $authority;
+
+            header('Location: regist_confirm.php');
+            exit;
+        }else {
+            $_SESSION['last_name'] = $last_name;
+            $_SESSION['family_name'] = $family_name;
+            $_SESSION['last_name_kana'] = $last_name_kana;
+            $_SESSION['family_name_kana'] = $family_name_kana;
+            $_SESSION['mail'] = $mail;
+            $_SESSION['password'] = $password;
+            $_SESSION['gender'] = $gender;
+            $_SESSION['postal_code'] = $postal_code;
+            $_SESSION['prefecture'] = $prefecture;
+            $_SESSION['address_1'] = $address_1;
+            $_SESSION['address_2'] = $address_2;
+            $_SESSION['authority'] = $authority;
+        }
     }
+}else{
+     echo  
+      "<!doctype HTML>
+        <html lang=\"ja\">
+        <head>
+        <meta charset=\"utf-8\">
+        <title>アカウント登録完了画面</title>
+        <link rel=\"stylesheet\" type=\"text/css\" href=\"style2.css\">
+        </head>
+        <body>
+
+        <header>
+            <img src=\"diblog_logo.jpg\">
+            <ul class=\"menu\">
+                <li>トップ</li>
+                <li>プロフィール</li>
+                <li>D.I.Blogについて</li>
+                <li>登録フォーム</li>
+                <li>問い合わせ</li>
+                <li>その他</li>
+            </ul>
+        </header>
+
+        <h1>ログイン画面</h1>
+        
+        
+        <div class='error-message'>権限がありません</div>
+ 
+
+        <footer>
+            <p>Copyright D.I.works| D.I.blog is the one which provides A to Z about programming</p>
+        </footer>
+
+    </body>
+    </html>";
+    exit();
 }
 ?>
 

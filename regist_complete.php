@@ -106,8 +106,8 @@
   
   <?php
   if ($result !== false || $pdo !== false ) {
-    session_unset();
-    session_destroy();
+    require_once 'sessionFunction.php';
+    sessionClear();
   ?>
     
     <div class="complete">

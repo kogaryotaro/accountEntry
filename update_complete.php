@@ -124,8 +124,8 @@ $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   
   <?php
   if ($result !== false || $pdo !== false ) {
-    session_unset();
-    session_destroy();
+    require_once 'sessionFunction.php';
+    sessionClear();
   }
   ?>
     
