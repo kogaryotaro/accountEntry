@@ -88,7 +88,7 @@
 <body>
     
 <header>
-    <img src="diblog_logo.jpg">
+    <a href="index.php"><img src="diblog_logo.jpg"></a>
       <ul  class="menu">
         <li>トップ</li>
         <li>プロフィール</li>
@@ -112,7 +112,7 @@
     
     <div class="complete">
         <h2>登録完了しました</h2> 
-      <form action="index.html" method="post">
+      <form action="index.php" method="post">
         <input type="submit" class="button2" value="TOPページに戻る">
     </div>
       
